@@ -1,0 +1,14 @@
+{
+  "name": "trading-tips",
+  "version": "0.1.0",
+  "main": "advisor.js",
+  "engines": {
+    "node": ">=8"
+  },
+  "dependencies": {
+    "aabot": "git+https://github.com/byteball/aabot.git"
+  },
+  "resolutions": {
+    "level-rocksdb": "^4.0.0"
+  }
+}
