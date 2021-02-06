@@ -9,6 +9,7 @@ const CurveAA = require('./curve.js');
 let bStarted = false;
 
 async function getTipsByAA(aa) {
+	console.log('getTipsByAA', aa);
 	if (!bStarted)
 		await start();
 	const curve = CurveAA.get(aa);
@@ -16,6 +17,7 @@ async function getTipsByAA(aa) {
 		throw Error('no curve ' + aa);
 	
 	const tips = await curve.getTips();
+	console.log('getTipsByAA got tips', tips);
 	return tips;
 }
 
@@ -56,6 +58,7 @@ function subscribeToRequests(handleTips, delay = 1000) {
 				handleTips(tips);
 		}, delay);
 	eventBus.on('aa_request_applied', (objAARequest) => {
+		console.log('new request', objAARequest);
 		if (handlers[objAARequest.aa_address])
 			handlers[objAARequest.aa_address]();
 	});
