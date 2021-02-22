@@ -98,6 +98,7 @@ class CurveAA {
 		const s2 = v.supply2 / mul2;
 
 		const get_t1_tip = async () => {
+			console.log(`looking for T1 tip in ${this.#curve_aa}`);
 			const target_s1 = (target_p2 / n) ** (1 / m) * s2 ** ((1 - n) / m);
 			const target_p1 = m * target_s1 ** (m - 1) * s2 ** n;
 
@@ -108,7 +109,13 @@ class CurveAA {
 			const tokens1 = Math.round(delta1 / 10);
 			if (tokens1 === 0) // too small
 				return null;
-			const res = await formulaEvaluation.executeGetterInState(db, this.#curve_aa, 'get_exchange_result', [tokens1, 0], aa_state.getUpcomingStateVars(), aa_state.getUpcomingBalances());
+			try {
+				var res = await formulaEvaluation.executeGetterInState(db, this.#curve_aa, 'get_exchange_result', [tokens1, 0], aa_state.getUpcomingStateVars(), aa_state.getUpcomingBalances());
+			}
+			catch (e) {
+				console.log(`getter failed in T1 ${this.#curve_aa}`, e);
+				return null;
+			}
 			const current_p1 = res.reserve_needed / mulr / (tokens1 / mul1);
 			if (current_p1 < 0 && tokens1 < 0)
 				throw Error(`negative current p1 ${current_p1}, tokens1=${tokens1}, reserve_needed=${res.reserve_needed}, aa=${this.#curve_aa}`);
@@ -133,6 +140,7 @@ class CurveAA {
 		};
 		
 		const get_t2_tip = async () => {
+			console.log(`looking for T2 tip in ${this.#curve_aa}`);
 			const target_s2 = (target_p2 / n) ** (1 / (n - 1)) * s1 ** (-m / (n - 1));
 
 			// how many tokens need to be bought/sold to get back on peg
@@ -142,7 +150,13 @@ class CurveAA {
 			const tokens2 = Math.round(delta2 / 10);
 			if (tokens2 === 0) // too small
 				return null;
-			const res = await formulaEvaluation.executeGetterInState(db, this.#curve_aa, 'get_exchange_result', [0, tokens2], aa_state.getUpcomingStateVars(), aa_state.getUpcomingBalances());
+			try {
+				var res = await formulaEvaluation.executeGetterInState(db, this.#curve_aa, 'get_exchange_result', [0, tokens2], aa_state.getUpcomingStateVars(), aa_state.getUpcomingBalances());
+			}
+			catch (e) {
+				console.log(`getter failed in T2 ${this.#curve_aa}`, e);
+				return null;
+			}
 			const current_p2 = res.reserve_needed / mulr / (tokens2 / mul2);
 			if (current_p2 < 0 && tokens2 < 0)
 				throw Error(`negative current p2 ${current_p2}, tokens2=${tokens2}, reserve_needed=${res.reserve_needed}, aa=${this.#curve_aa}`);
